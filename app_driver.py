@@ -10,11 +10,10 @@ def check():
 
 if __name__ == "__main__":
     while True:
-        print("Functionalities of REST API: (pick)")
+        print("Functionalities of REST API: ")
         print("1 - heuristic algorithm")
-        print("2 - machine learning model I")
-        print("3 - machine learning model II")
-        print("4 - neural network")
+        print("2 - machine learning models")
+        print("3 - neural network")
         print("e - exit")
 
         insert = input(str("Choice: "))
