@@ -12,6 +12,7 @@ import random
 import pandas as pd
 
 
+
 class CoverTypeClassifier:
     def __init__(self, data_file_path, num_rows=1000):
         self.data = pd.read_csv(data_file_path, header=None)
