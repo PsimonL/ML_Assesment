@@ -48,7 +48,7 @@ def predict():
         classifier.outliers()
         classifier.split()
         classifier.scaling()
-        classifier.build()
+        classifier.create_model()
         ann_acc = classifier.train()
         predicted_cover_type = classifier.predict_cover_type(predict)
         predicted_cover_type = np.int64(predicted_cover_type).tolist()
