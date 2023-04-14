@@ -58,8 +58,6 @@ class CoverTypeClassifierHeuristic:
         mean_val = self.data[col_name].mean()
         print(f"Mean value of '{col_name}' - row {self.data.columns.get_loc}:{mean_val}")
 
-    def most_common_classification(self):
-        print()
     def simple_heuristic_classification(self):
         print()
 
@@ -82,5 +80,5 @@ heuristic.min_max_mean_values('Horizontal_Distance_To_Hydrology')
 heuristic.min_max_mean_values('Horizontal_Distance_To_Roadways')
 heuristic.min_max_mean_values('Horizontal_Distance_To_Fire_Points')
 
-heuristic.most_common_classification()
+
 heuristic.simple_heuristic_classification()
