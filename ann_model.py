@@ -3,7 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 import seaborn as sns
-from sklearn.model_selection import train_test_split
+from keras.wrappers.scikit_learn import KerasClassifier
+from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV
 from sklearn.preprocessing import StandardScaler
 
 
@@ -52,7 +53,7 @@ class CoverTypeClassifierNN:
         for i, column in enumerate(self.cols):
             fig, ax = plt.subplots()
             sns.boxplot(data=self.data[column], ax=ax).set(title=f"{column.upper()} boxplot", xlabel=f"{column}",
-                                                      ylabel=f"Value of {column}")
+                                                           ylabel=f"Value of {column}")
             ax.set_title(column)
             sns.despine()
             plt.show()
@@ -77,14 +78,16 @@ class CoverTypeClassifierNN:
                     fmt=".2f", linewidth=.5, cmap=sns.cubehelix_palette(as_cmap=True))
         plt.show()
 
-    def build(self):
+    def create_model(self, hidden_layer_size=128, activation="relu", optimizer="adam", dropout_rate=0.0):
         self.model = tf.keras.models.Sequential([
-            tf.keras.layers.Dense(128, activation="relu", input_shape=(self.X_train.shape[1],)),
+            tf.keras.layers.Dense(units=hidden_layer_size, activation=activation, input_shape=(self.X_train.shape[1],)),
+            tf.keras.layers.Dropout(dropout_rate),
             tf.keras.layers.Dense(7, activation="softmax")
         ])
+        self.model.compile(optimizer=optimizer, loss="sparse_categorical_crossentropy", metrics=["accuracy"])
+        return self.model
 
     def train(self):
-        self.model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
         self.model.fit(self.X_train, self.y_train, epochs=1, batch_size=32, validation_split=0.2)
         loss, accuracy = self.model.evaluate(self.X_test, self.y_test)
         return accuracy
@@ -94,27 +97,54 @@ class CoverTypeClassifierNN:
         test_row = pd.DataFrame([sample], columns=self.data.columns[:-1])
         test_row = self.scaler.fit_transform(test_row)
         predicted_cover_type = self.model.predict(test_row)
-        # Pick class with highest value
+        # Pick class with the highest value
         predicted_class = np.argmax(predicted_cover_type)
         predicted_value = self.data["Cover_Type"].unique()[predicted_class]
         return predicted_value
 
+    def get_hyperparameters(self):
+        self.model = KerasClassifier(build_fn=self.create_model, verbose=0)
 
-# ann_model = CoverTypeClassifierNN(data_file_path='covtype.data')
-# # ann_model.plot_boxplots()
-# ann_model.outliers()
-# ann_model.split()
-# ann_model.scaling()
-# # ann_model.correlation_matrix_heatmap()
-# ann_model.build()
-# acc = ann_model.train()
-# print(acc)
-# predict = [
-#     2596, 51, 3, 258, 0, 510, 221, 232, 148, 6279,
-#     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#     0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-# ]
-# val = ann_model.predict_cover_type(predict)
-# print(val)
+        param_grid = {
+            'hidden_layer_size': [64, 128, 256],
+            'activation': ['relu', 'sigmoid'],
+            'optimizer': ['adam', 'sgd'],
+            'dropout_rate': [0.1, 0.2, 0.3],
+            'batch_size': [32, 64],
+            'epochs': [5, 10]
+        }
 
+        random_search = RandomizedSearchCV(
+            estimator=self.model,
+            param_distributions=param_grid,
+            n_iter=10,
+            cv=3,
+            n_jobs=-1
+        )
+
+        random_search.fit(self.X_train, self.y_train)
+
+        print(f"Best hyperparameters = {random_search.best_params_}")
+        print("Best accuracy score = {:.2f}%".format(random_search.best_score_ * 100))
+
+
+ann_model = CoverTypeClassifierNN(data_file_path='covtype.data')
+# ann_model.plot_boxplots()
+ann_model.outliers()
+ann_model.split()
+ann_model.scaling()
+# ann_model.correlation_matrix_heatmap()
+ann_model.create_model()
+acc = ann_model.train()
+print(acc)
+predict = [
+    2596, 51, 3, 258, 0, 510, 221, 232, 148, 6279,
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+]  # 5
+val = ann_model.predict_cover_type(predict)
+print(val)
+print("+++++++++++++++++++++++++++++++HYPERPARAMETERS+++++++++++++++++++++++++++++++")
+ann_model.get_hyperparameters()
+print("+++++++++++++++++++++++++++++++++++++DONE+++++++++++++++++++++++++++++++++++++")
