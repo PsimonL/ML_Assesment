@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from request_driver import options
-from two_ml_models import CoverTypeClassifier
+from two_ml_models import CoverTypeClassifierRFLR
 
 app = Flask(__name__)
 
@@ -24,8 +24,10 @@ def predict():
     output_json.clear()
     if picked_option == options[0]:
         print(picked_option)
+        output_json = {"Heuristic Algorithm Accuracy": "HAC",
+                       "Predict 'Cover_type' value for sample": "PCtvfs"}
     elif picked_option == options[1]:
-        classifier = CoverTypeClassifier(data_file_path='covtype.data')
+        classifier = CoverTypeClassifierRFLR(data_file_path='covtype.data')
         random_forest_acc = classifier.get_random_forest_accuracy()
         logistic_reg_acc = classifier.get_logistic_regression_accuracy()
         predicted_cover_type = classifier.predict_cover_type(sample_pred)
@@ -34,6 +36,8 @@ def predict():
                        "Predict 'Cover_type' value for sample": predicted_cover_type}
     elif picked_option == options[2]:
         print(picked_option)
+        output_json = {"ANN Accuracy": "ANNA",
+                       "Predict 'Cover_type' value for sample": "PCtvfs"}
     else:
         return jsonify({'error': 'Invalid option choice.'}), 400
 

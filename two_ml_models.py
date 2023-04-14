@@ -12,11 +12,9 @@ import random
 import pandas as pd
 
 
-
-class CoverTypeClassifier:
-    def __init__(self, data_file_path, num_rows=1000):
+class CoverTypeClassifierRFLR:
+    def __init__(self, data_file_path):
         self.data = pd.read_csv(data_file_path, header=None)
-        self.data = self.data.iloc[:num_rows, :]
 
         columns = [
             'Elevation', 'Aspect', 'Slope', 'Horizontal_Distance_To_Hydrology',
@@ -43,6 +41,7 @@ class CoverTypeClassifier:
 
         self.random_forest = RandomForestClassifier()
         self.random_forest.fit(self.X_train, self.y_train)
+
         self.logistic_reg = LogisticRegression()
         self.logistic_reg.fit(self.X_train, self.y_train)
 
@@ -61,7 +60,6 @@ class CoverTypeClassifier:
         sample = self.scaler.transform(sample)
         predicted_cover_type = self.random_forest.predict(sample)
         return predicted_cover_type[0]
-
 
 # idx = random.randint(0, len(X_test) - 1)
 # sample = X_test[idx]
