@@ -23,10 +23,11 @@ def predict():
 
     output_json = {}
     output_json.clear()
+
     if picked_option == options[0]:
         print(picked_option)
         output_json = {"Heuristic Algorithm Accuracy": "HAC",
-                       "Predict 'Cover_type' value for sample": "PCtvfs"}
+                       "Predict 'Cover_type' value for sample - Heuristic Algorithm": "PCtvfs"}
     elif picked_option == options[1]:
         classifier = CoverTypeClassifierRFLR(data_file_path='covtype.data')
         random_forest_acc = classifier.get_random_forest_accuracy()
