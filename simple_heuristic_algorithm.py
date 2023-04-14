@@ -62,6 +62,7 @@ class CoverTypeClassifierHeuristic:
         self.data['predicted_cover_type'] = self.data.apply(self.get_pred_simple_heuristic, axis=1)
         accuracy = (self.data['predicted_cover_type'] == self.data['Cover_Type']).mean() * 100
         return accuracy
+
     def get_pred_simple_heuristic(self, row):
         if row['Elevation'] > 3000 and row['Slope'] < 20:
             return 1
@@ -78,8 +79,6 @@ class CoverTypeClassifierHeuristic:
             return 6
         else:
             return 7
-
-
 
 
 heuristic = CoverTypeClassifierHeuristic(data_file_path='covtype.data')
