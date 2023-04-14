@@ -78,7 +78,8 @@ class CoverTypeClassifierNN:
                     fmt=".2f", linewidth=.5, cmap=sns.cubehelix_palette(as_cmap=True))
         plt.show()
 
-    def create_model(self, hidden_layer_size=128, activation="relu", optimizer="adam", dropout_rate=0.0):
+    def create_model(self, optimizer, hidden_layer_size, epochs, dropout_rate, batch_size, activation):
+        self.epochs, self.batch_size = epochs, batch_size
         self.model = tf.keras.models.Sequential([
             tf.keras.layers.Dense(units=hidden_layer_size, activation=activation, input_shape=(self.X_train.shape[1],)),
             tf.keras.layers.Dropout(dropout_rate),
@@ -87,8 +88,8 @@ class CoverTypeClassifierNN:
         self.model.compile(optimizer=optimizer, loss="sparse_categorical_crossentropy", metrics=["accuracy"])
         return self.model
 
-    def train(self):
-        self.model.fit(self.X_train, self.y_train, epochs=1, batch_size=32, validation_split=0.2)
+    def train(self, epochs, batch_size):
+        self.model.fit(self.X_train, self.y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
         loss, accuracy = self.model.evaluate(self.X_test, self.y_test)
         return accuracy
 
@@ -104,47 +105,64 @@ class CoverTypeClassifierNN:
 
     def get_hyperparameters(self):
         self.model = KerasClassifier(build_fn=self.create_model, verbose=0)
-
         param_grid = {
             'hidden_layer_size': [64, 128, 256],
             'activation': ['relu', 'sigmoid'],
             'optimizer': ['adam', 'sgd'],
             'dropout_rate': [0.1, 0.2, 0.3],
-            'batch_size': [32, 64],
-            'epochs': [5, 10]
+            'batch_size': [32, 64, 128],
+            'epochs': [5, 10, 20]
         }
-
-        random_search = RandomizedSearchCV(
+        searcher = RandomizedSearchCV(
             estimator=self.model,
             param_distributions=param_grid,
             n_iter=10,
             cv=3,
             n_jobs=-1
         )
+        searcher.fit(self.X_train, self.y_train)
+        return searcher.best_params_, searcher.best_score_
 
-        random_search.fit(self.X_train, self.y_train)
+    def plot_training_curvers(self, best_params):
+        new_model = self.create_model(**best_params)
+        history = new_model.fit(self.X_train, self.y_train, epochs=best_params["epochs"],
+                                batch_size=best_params["batch_size"],
+                                validation_data=(self.X_test, self.y_test))
 
-        print(f"Best hyperparameters = {random_search.best_params_}")
-        print("Best accuracy score = {:.2f}%".format(random_search.best_score_ * 100))
+        plt.plot(history.history['accuracy'])
+        plt.plot(history.history['val_accuracy'])
+        plt.title('Model accuracy')
+        plt.ylabel('Accuracy')
+        plt.xlabel('Epoch')
+        plt.legend(['Train', 'Validation'], loc='upper left')
+        plt.show()
 
+        plt.plot(history.history['loss'])
+        plt.plot(history.history['val_loss'])
+        plt.title('Model loss')
+        plt.ylabel('Loss')
+        plt.xlabel('Epoch')
+        plt.legend(['Train', 'Validation'], loc='upper left')
+        plt.show()
 
-ann_model = CoverTypeClassifierNN(data_file_path='covtype.data')
-# ann_model.plot_boxplots()
-ann_model.outliers()
-ann_model.split()
-ann_model.scaling()
-# ann_model.correlation_matrix_heatmap()
-ann_model.create_model()
-acc = ann_model.train()
-print(acc)
-predict = [
-    2596, 51, 3, 258, 0, 510, 221, 232, 148, 6279,
-    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-]  # 5
-val = ann_model.predict_cover_type(predict)
-print(val)
-print("+++++++++++++++++++++++++++++++HYPERPARAMETERS+++++++++++++++++++++++++++++++")
-ann_model.get_hyperparameters()
-print("+++++++++++++++++++++++++++++++++++++DONE+++++++++++++++++++++++++++++++++++++")
+# ann_model = CoverTypeClassifierNN(data_file_path='covtype.data')
+# # ann_model.plot_boxplots()
+# ann_model.outliers()
+# ann_model.split()
+# ann_model.scaling()
+# # ann_model.correlation_matrix_heatmap()
+# ann_model.create_model(optimizer="adam", hidden_layer_size=128, epochs=1, dropout_rate=0.0, batch_size=32, activation="relu")
+# acc = ann_model.train(epochs=1, batch_size=32)
+# print(acc)
+# predict = [
+#     2596, 51, 3, 258, 0, 510, 221, 232, 148, 6279,
+#     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+#     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+#     0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+# ]  # 5
+# predicted_ann = ann_model.predict_cover_type(predict)
+# print(predicted_ann)
+# best_params, best_score = ann_model.get_hyperparameters()
+# print(f"Best hyperparameters = {best_params}")
+# print("Best accuracy score = {:.2f}%".format(best_score * 100))
+# ann_model.plot_training_curvers(best_params)
