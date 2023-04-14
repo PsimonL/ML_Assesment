@@ -1,10 +1,12 @@
 from flask import Flask, request, jsonify
 import numpy as np
+import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from request_driver import options
 from two_ml_models import CoverTypeClassifierRFLR
 from ann_model import CoverTypeClassifierNN
+from simple_heuristic_algorithm import CoverTypeClassifierHeuristic
 
 app = Flask(__name__)
 
@@ -25,9 +27,23 @@ def predict():
     output_json.clear()
 
     if picked_option == options[0]:
-        print(picked_option)
-        output_json = {"Heuristic Algorithm Accuracy": "HAC",
-                       "Predict 'Cover_type' value for sample - Heuristic Algorithm": "PCtvfs"}
+        classifier = CoverTypeClassifierHeuristic(data_file_path='covtype.data')
+        heuristic_acc = classifier.get_accu_simple_heuristic()
+
+        sample_row = pd.Series({
+            'Elevation': sample_pred[0],
+            'Slope': sample_pred[1],
+            'Aspect': sample_pred[2],
+            'Hillshade_Noon': sample_pred[7],
+            'Wilderness_Area_3': sample_pred[12],
+            'Horizontal_Distance_To_Hydrology': sample_pred[3],
+            'Hillshade_9am': sample_pred[6]
+        })
+
+        predicted_cover_type = classifier.get_pred_simple_heuristic(sample_row)
+        predicted_cover_type = np.int64(predicted_cover_type).tolist()
+        output_json = {"Heuristic Algorithm Accuracy": heuristic_acc,
+                       "Predict 'Cover_type' value for sample - Heuristic Algorithm": predicted_cover_type}
     elif picked_option == options[1]:
         classifier = CoverTypeClassifierRFLR(data_file_path='covtype.data')
         random_forest_acc = classifier.get_random_forest_accuracy()

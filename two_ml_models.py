@@ -5,7 +5,8 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, f1_score
+from keras.metrics import AUC
 from sklearn.preprocessing import StandardScaler
 import numpy as np
 import random
@@ -48,11 +49,13 @@ class CoverTypeClassifierRFLR:
     def get_random_forest_accuracy(self):
         forest_pred = self.random_forest.predict(self.X_test)
         forest_acc = accuracy_score(self.y_test, forest_pred)
+        forest_f1 = f1_score(self.y_test, forest_pred)
         return forest_acc
 
     def get_logistic_regression_accuracy(self):
         logistic_reg_pred = self.logistic_reg.predict(self.X_test)
         logistic_reg_acc = accuracy_score(self.y_test, logistic_reg_pred)
+        logistic_reg_f1 = f1_score(self.y_test, logistic_reg_pred)
         return logistic_reg_acc
 
     def predict_cover_type(self, sample, pick):
