@@ -1,6 +1,6 @@
 import requests
 
-options = ["heuristic algorithm", "machine learning models", "neural network", "exit"]
+options = ["heuristic algorithm", "random forest", "logistic regression", "neural network", "exit"]
 predict = [
     2596, 51, 3, 258, 0, 510, 221, 232, 148, 6279,
     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -23,7 +23,8 @@ if __name__ == "__main__":
         print(f"1 - {options[0]}")
         print(f"2 - {options[1]}")
         print(f"3 - {options[2]}")
-        print(f"e - {options[3]}")
+        print(f"4 - {options[3]}")
+        print(f"e - {options[4]}")
 
         insert = input(str("Choice: "))
 
@@ -34,7 +35,8 @@ if __name__ == "__main__":
             break
 
         mylist = [
-            options[0] if insert == "1" else options[1] if insert == "2" else options[2] if insert == "3" else ""
+            options[0] if insert == "1" else options[1] if insert == "2" else options[2] if insert == "3"
+            else options[3] if insert == "4" else ""
         ]
         print("options[int(insert)] = ", options[int(insert)-1])
         print("predict = ", predict)
