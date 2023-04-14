@@ -98,17 +98,17 @@ heuristic = CoverTypeClassifierHeuristic(data_file_path='covtype.data')
 # heuristic.min_max_mean_values('Horizontal_Distance_To_Roadways')
 # heuristic.min_max_mean_values('Horizontal_Distance_To_Fire_Points')
 
-accuracy = heuristic.get_accu_simple_heuristic()
-print("heuristic accuracy = ", accuracy)
-
-sample_row = pd.Series({
-    'Elevation': 2800,
-    'Slope': 12,
-    'Aspect': 220,
-    'Hillshade_Noon': 220,
-    'Wilderness_Area_3': 1,
-    'Horizontal_Distance_To_Hydrology': 120,
-    'Hillshade_9am': 160
-})
-pred_val = heuristic.get_pred_simple_heuristic(sample_row)
-print("heuristic pred_val = ", pred_val)
+# accuracy = heuristic.get_accu_simple_heuristic()
+# print("heuristic accuracy = ", accuracy)
+#
+# sample_row = pd.Series({
+#     'Elevation': 2800,
+#     'Slope': 12,
+#     'Aspect': 220,
+#     'Hillshade_Noon': 220,
+#     'Wilderness_Area_3': 1,
+#     'Horizontal_Distance_To_Hydrology': 120,
+#     'Hillshade_9am': 160
+# })
+# pred_val = heuristic.get_pred_simple_heuristic(sample_row)
+# print("heuristic pred_val = ", pred_val)
