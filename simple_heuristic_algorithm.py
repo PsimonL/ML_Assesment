@@ -58,29 +58,58 @@ class CoverTypeClassifierHeuristic:
         mean_val = self.data[col_name].mean()
         print(f"Mean value of '{col_name}' - row {self.data.columns.get_loc}:{mean_val}")
 
-    def most_common_classification(self):
-        print()
-    def simple_heuristic_classification(self):
-        print()
+    def get_accu_simple_heuristic(self):
+        self.data['predicted_cover_type'] = self.data.apply(self.get_pred_simple_heuristic, axis=1)
+        accuracy = (self.data['predicted_cover_type'] == self.data['Cover_Type']).mean() * 100
+        return accuracy
+    def get_pred_simple_heuristic(self, row):
+        if row['Elevation'] > 3000 and row['Slope'] < 20:
+            return 1
+        elif row['Elevation'] < 3000 and row['Slope'] < 15:
+            return 2
+        elif row['Elevation'] < 2500 and row['Slope'] > 10:
+            return 3
+        elif 180 < row['Aspect'] < 150 and row['Hillshade_Noon'] > 200 and row[
+            'Horizontal_Distance_To_Roadways'] > 2000:
+            return 4
+        elif 270 < row['Aspect'] < 300 and row['Hillshade_3pm'] > 150 and row['Horizontal_Distance_To_Roadways'] < 2000:
+            return 5
+        elif row['Wilderness_Area_1'] == 0 and row['Soil_Type_10'] == 1:
+            return 6
+        else:
+            return 7
 
 
 
 
 heuristic = CoverTypeClassifierHeuristic(data_file_path='covtype.data')
 
-heuristic.correlation_matrix_heatmap()
+# heuristic.correlation_matrix_heatmap()
+#
+# heuristic.make_histogram('Elevation', 57)
+# heuristic.make_histogram('Aspect', 57)
+# heuristic.make_histogram('Slope', 57)
+# heuristic.make_histogram('Horizontal_Distance_To_Hydrology', 57)
+# heuristic.make_histogram('Horizontal_Distance_To_Roadways', 57)
+# heuristic.make_histogram('Horizontal_Distance_To_Fire_Points', 57)
+#
+# heuristic.min_max_mean_values('Elevation')
+# heuristic.min_max_mean_values('Aspect')
+# heuristic.min_max_mean_values('Horizontal_Distance_To_Hydrology')
+# heuristic.min_max_mean_values('Horizontal_Distance_To_Roadways')
+# heuristic.min_max_mean_values('Horizontal_Distance_To_Fire_Points')
 
-heuristic.make_histogram('Elevation', 57)
-heuristic.make_histogram('Aspect', 57)
-heuristic.make_histogram('Horizontal_Distance_To_Hydrology', 57)
-heuristic.make_histogram('Horizontal_Distance_To_Roadways', 57)
-heuristic.make_histogram('Horizontal_Distance_To_Fire_Points', 57)
+accuracy = heuristic.get_accu_simple_heuristic()
+print("heuristic accuracy = ", accuracy)
 
-heuristic.min_max_mean_values('Elevation')
-heuristic.min_max_mean_values('Aspect')
-heuristic.min_max_mean_values('Horizontal_Distance_To_Hydrology')
-heuristic.min_max_mean_values('Horizontal_Distance_To_Roadways')
-heuristic.min_max_mean_values('Horizontal_Distance_To_Fire_Points')
-
-heuristic.most_common_classification()
-heuristic.simple_heuristic_classification()
+sample_row = pd.Series({
+    'Elevation': 2800,
+    'Slope': 12,
+    'Aspect': 220,
+    'Hillshade_Noon': 220,
+    'Wilderness_Area_3': 1,
+    'Horizontal_Distance_To_Hydrology': 120,
+    'Hillshade_9am': 160
+})
+pred_val = heuristic.get_pred_simple_heuristic(sample_row)
+print("heuristic pred_val = ", pred_val)
