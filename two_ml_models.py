@@ -55,11 +55,15 @@ class CoverTypeClassifierRFLR:
         logistic_reg_acc = accuracy_score(self.y_test, logistic_reg_pred)
         return logistic_reg_acc
 
-    def predict_cover_type(self, sample):
+    def predict_cover_type(self, sample, pick):
         sample = sample.reshape(1, -1)
         sample = self.scaler.transform(sample)
-        predicted_cover_type = self.random_forest.predict(sample)
-        return predicted_cover_type[0]
+        if pick == "RF":
+            predicted_cover_type = self.random_forest.predict(sample)
+            return predicted_cover_type[0]
+        elif pick == "LR":
+            predicted_cover_type = self.logistic_reg.predict(sample)
+            return predicted_cover_type[0]
 
 # idx = random.randint(0, len(X_test) - 1)
 # sample = X_test[idx]

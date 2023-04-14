@@ -7,10 +7,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 
-class CoverTypeClassifierANN:
+class CoverTypeClassifierNN:
 
-    def __init__(self):
-        self.data = pd.read_csv('covtype.data', header=None)
+    def __init__(self, data_file_path):
+        self.data = pd.read_csv(data_file_path, header=None)
         self.columns = [
             'Elevation', 'Aspect', 'Slope', 'Horizontal_Distance_To_Hydrology',
             'Vertical_Distance_To_Hydrology', 'Horizontal_Distance_To_Roadways',
@@ -32,6 +32,7 @@ class CoverTypeClassifierANN:
         self.y_train = None
         self.y_test = None
         self.model = None
+        self.scaler = StandardScaler()
 
     def outliers(self):
         # # Interquartile Range (IQR)
@@ -62,9 +63,8 @@ class CoverTypeClassifierANN:
                                                                                 test_size=0.2)
 
     def scaling(self):
-        scaler = StandardScaler()
-        self.X_train = scaler.fit_transform(self.X_train)
-        self.X_test = scaler.transform(self.X_test)
+        self.X_train = self.scaler.fit_transform(self.X_train)
+        self.X_test = self.scaler.transform(self.X_test)
 
     def correlation_matrix_heatmap(self):
         data_subset = self.data[self.cols]
@@ -85,14 +85,36 @@ class CoverTypeClassifierANN:
 
     def train(self):
         self.model.compile(optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"])
-        self.model.fit(self.X_train, self.y_train, epochs=10, batch_size=32, validation_split=0.2)
+        self.model.fit(self.X_train, self.y_train, epochs=1, batch_size=32, validation_split=0.2)
+        loss, accuracy = self.model.evaluate(self.X_test, self.y_test)
+        return accuracy
+
+    def predict_cover_type(self, sample):
+        # Sample row dataframe
+        test_row = pd.DataFrame([sample], columns=self.data.columns[:-1])
+        test_row = self.scaler.fit_transform(test_row)
+        predicted_cover_type = self.model.predict(test_row)
+        # Pick class with highest value
+        predicted_class = np.argmax(predicted_cover_type)
+        predicted_value = self.data["Cover_Type"].unique()[predicted_class]
+        return predicted_value
 
 
-ann_model = CoverTypeClassifierANN()
-ann_model.plot_boxplots()
-ann_model.outliers()
-ann_model.split()
-ann_model.scaling()
-ann_model.correlation_matrix_heatmap()
-ann_model.build()
-ann_model.train()
+# ann_model = CoverTypeClassifierNN(data_file_path='covtype.data')
+# # ann_model.plot_boxplots()
+# ann_model.outliers()
+# ann_model.split()
+# ann_model.scaling()
+# # ann_model.correlation_matrix_heatmap()
+# ann_model.build()
+# acc = ann_model.train()
+# print(acc)
+# predict = [
+#     2596, 51, 3, 258, 0, 510, 221, 232, 148, 6279,
+#     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+#     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+#     0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+# ]
+# val = ann_model.predict_cover_type(predict)
+# print(val)
+
