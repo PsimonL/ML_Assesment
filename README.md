@@ -15,9 +15,21 @@ and take all necessary input features and return a prediction.
 Source of data: https://archive.ics.uci.edu/ml/datasets/Covertype  
 Data was published by Colorado State University in the USA.  
 
-Requirements:
+Tech stack:
+- scikit-learn
+- tensorflow/keras
+- seaborn
+- matplotlib
+- pandas
+- numpy
+- flask
+- docker
+- pickle
 
-
+To install one of the above:
+```
+pip install <package_name>
+```
 ## Description
 ### Dataset
 Dataset is being stored as **covtype.data** file, already pre-processed, ready to work with.
