@@ -265,6 +265,6 @@ curl -X POST -H "Content-Type: application/json" -d '{"option": "'"$option"'", "
 ```
 
 ## Finished
-Szymon Rogowski
-Industrial Computer Science / Computational Engineering 3rd year student
-AGH University of Science and Technology, Kraków, Poland
+Szymon Rogowski  
+Industrial Computer Science / Computational Engineering 3rd year student  
+AGH University of Science and Technology, Kraków, Poland  
