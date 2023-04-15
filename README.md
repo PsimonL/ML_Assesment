@@ -54,3 +54,5 @@ more than 500k (Hardware limitations).
 ### REST API
 
 ### Docker
+emote: error: File serialized_files/model_heuristic.pkl is 487.61 MB; this exceeds GitHub's file size limit of 100.00 MB        
+remote: error: File serialized_files/model_NN.pkl is 243.80 MB; this exceeds GitHub's file size limit of 100.00 MB
