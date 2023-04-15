@@ -176,3 +176,5 @@ class CoverTypeClassifierNN:
 # print(f"Best hyperparameters = {best_params}")
 # print("Best accuracy score = {:.2f}%".format(best_score * 100))
 # ann_model.plot_training_curvers(best_params)
+
+# print(json.dumps(output_json, indent=4))

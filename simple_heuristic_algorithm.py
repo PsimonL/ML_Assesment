@@ -54,11 +54,11 @@ class CoverTypeClassifierHeuristic:
     def min_max_mean_values(self, col_name):
         max_val = self.data[col_name].max()
         min_val = self.data[col_name].min()
-        print(f"Maximum value of '{col_name}' - row {self.data.columns.get_loc}: {max_val}")
-        print(f"Minimum value of '{col_name}' - row {self.data.columns.get_loc}: {min_val}")
+        print(f"Maximum value of '{col_name}': {max_val}")
+        print(f"Minimum value of '{col_name}': {min_val}")
 
         mean_val = self.data[col_name].mean()
-        print(f"Mean value of '{col_name}' - row {self.data.columns.get_loc}:{mean_val}")
+        print(f"Mean value of '{col_name}': {mean_val}")
 
     def get_accu_simple_heuristic(self):
         self.data['predicted_cover_type'] = self.data.apply(self.get_pred_simple_heuristic, axis=1)
@@ -102,19 +102,19 @@ class CoverTypeClassifierHeuristic:
 #
 # accuracy = heuristic.get_accu_simple_heuristic()
 # print("heuristic accuracy = ", accuracy)
-
+#
 # sample_row = pd.Series({
-    # 'Elevation': 2800,
-    # 'Slope': 12,
-    # 'Aspect': 220,
-    # 'Hillshade_Noon': 220,
-    # 'Wilderness_Area_3': 1,
-    # 'Horizontal_Distance_To_Hydrology': 120,
-    # 'Hillshade_9am': 160
+#     'Elevation': 2800,
+#     'Slope': 12,
+#     'Aspect': 220,
+#     'Hillshade_Noon': 220,
+#     'Wilderness_Area_3': 1,
+#     'Horizontal_Distance_To_Hydrology': 120,
+#     'Hillshade_9am': 160
 # })
 # pred_val = heuristic.get_pred_simple_heuristic(sample_row)
 # print("heuristic pred_val = ", pred_val)
-
+#
 # 'Elevation': 2596,
 # 'Slope': 3,
 # 'Aspect': 51,

@@ -11,6 +11,7 @@ from sklearn.preprocessing import StandardScaler
 import numpy as np
 import random
 import pandas as pd
+import json
 
 
 class CoverTypeClassifierRFLR:
@@ -70,6 +71,7 @@ class CoverTypeClassifierRFLR:
             predicted_cover_type = self.logistic_reg.predict(sample)
             return predicted_cover_type[0]
 
+
 # idx = random.randint(0, len(X_test) - 1)
 # sample = X_test[idx]
 # sample = sample.reshape(1, -1)
@@ -77,21 +79,22 @@ class CoverTypeClassifierRFLR:
 # predicted_cover_type = random_forest.predict(sample)
 # print(f"Value: {y_test.iloc[idx]}, Predicted: {predicted_cover_type[0]}")
 
-# sample_pred = [
-#     2596, 51, 3, 258, 0, 510, 221, 232, 148, 6279,
-#     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#     0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-# ]
-# print("INSIDE LOGISTIC REGRESSION 1")
-# classifier = CoverTypeClassifierRFLR(data_file_path='covtype.data')
-# print("INSIDE LOGISTIC REGRESSION 2")
-# logistic_reg_acc = classifier.get_logistic_regression_accuracy()
-# print("INSIDE LOGISTIC REGRESSION 3")
-# predicted_cover_type = classifier.predict_cover_type(sample_pred, "LR")
-# print("INSIDE LOGISTIC REGRESSION 4")
-# predicted_cover_type = np.int64(predicted_cover_type).tolist()
-# print("INSIDE LOGISTIC REGRESSION 5")
-# output_json = {"Logistic Regression Accuracy:": logistic_reg_acc,
-#                "Predict 'Cover_type' value for sample - Logistic Regression": predicted_cover_type}
-# print(output_json)
+sample_pred = [
+    2596, 51, 3, 258, 0, 510, 221, 232, 148, 6279,
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+]
+classifier = CoverTypeClassifierRFLR(data_file_path='dataset_and_info/covtype.data')
+logistic_reg_acc, logistic_reg_f1 = classifier.get_logistic_regression_accuracy()
+random_forest_acc, random_forest_f1 = classifier.get_random_forest_accuracy()
+predicted_lr = classifier.predict_cover_type(sample_pred, "LR")
+predicted_lr = np.int64(predicted_lr).tolist()
+predicted_rf = classifier.predict_cover_type(sample_pred, "RF")
+predicted_rf = np.int64(predicted_rf).tolist()
+output_json = {"Logistic Regression Accuracy:": logistic_reg_acc, "Random Forest Accuracy:": random_forest_acc,
+               "Logistic Regression F1_score:": logistic_reg_f1, "Random Forest F1_score:": random_forest_f1,
+               "Predict 'Cover_type' value for sample - Logistic Regression": predicted_lr,
+               "Predict 'Cover_type' value for sample - Random Forest": predicted_rf
+               }
+print(json.dumps(output_json, indent=4))
