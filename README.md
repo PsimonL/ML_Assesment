@@ -66,6 +66,7 @@ The logic within the if and elif statements compares the values of certain colum
 threshold values, and if the conditions are met, the method returns a corresponding integer prediction value.
 Logical expressions have been defined based on, among others, histograms and correlation matrices.
 
+
 Correlation matrix of picked labels:  
 <p align="center">
 <img src="dataset_and_info/markdown_pictures/corr_matrix.png" alt="corr_matrix.png" width="500" height="500">
@@ -73,14 +74,11 @@ Correlation matrix of picked labels:
 
 Example histograms made:  
 * Elevation:  
-<p align="center">
-<img src="dataset_and_info/markdown_pictures/elevation_hist.png" alt="elevation_hist.png" width="500" height="500">
-</p>  
+![slope_hist.png](dataset_and_info/markdown_pictures/elevation_hist.png) 
 
 * Slope:  
-<p align="center">
-<img src="dataset_and_info/markdown_pictures/slope_hist.png" alt="slope_hist.png" width="500" height="500">
-</p>  
+![slope_hist.png](dataset_and_info/markdown_pictures/slope_hist.png) 
+
 
 The obtained metric value of **accuracy** is **47%**.
 And predicted value is **2** for sample:
@@ -130,12 +128,78 @@ Which predicted value with accuracy and f1_score:
 </p>  
 
 ### TensorFlow neural network
+The neural network architecture consists of three layers:
+1. Dense layer with hidden_layer_size units and the specified activation function. 
+It takes an input shape of self.X_train.shape[1] which corresponds to the number of features in the training data.
+2. Dropout layer that randomly drops out a specified dropout_rate fraction of the input units during training to reduce overfitting.
+3. Another dense layer with 7 units and a softmax activation function. This layer outputs the probability distribution over the 7 output classes.
 
+In addition to scaling, as before, I performed outlier detection using the z-score or IQR method.
+Z-score method is used to identify and remove any outliers from the dataset. The z-score is calculated by subtracting 
+the mean of the data from each data point, and then dividing by the standard deviation. This gives a measure of 
+how many standard deviations a data point is from the mean of the dataset. Next, a threshold value is set. 
+In this case, it is set to 3, which means that any data point whose z-score is greater than 3 will be considered 
+an outlier and be removed right after.
 
+And IQR method also is could be used to remove outliers. Firstly I calculate the first quartile (Q1) and the third 
+quartile (Q3) of the data. Secondly I conduct calculation of the IQR as the difference between Q3 and Q1, that is, IQR = Q3 - Q1.
+Next I choose the lower cut-off threshold as Q1 - 1.5 * IQR and the upper cut-off threshold as Q3 + 1.5 * IQR.
+Finally I remove values from the data that are less than the lower cut-off threshold or greater than the upper cut-off threshold.
+
+```
+def outliers(self):
+    # # Interquartile Range (IQR)
+    # Q1 = self.data.quantile(0.25)
+    # Q3 = self.data.quantile(0.75)
+    # IQR = Q3 - Q1
+    # data = self.data[~((self.data < (Q1 - 1.5 * IQR)) | (self.data > (Q3 + 1.5 * IQR))).any(axis=1)]
+
+    # Calculate the z-scores of each column - measure that represents the number of standard deviations a data point is from the mean of the dataset
+    z_scores = (self.data - self.data.mean()) / self.data.std()
+    # Set the threshold for the z-score
+    threshold = 3
+    # Remove any rows where the z-score is greater than the threshold
+    self.data = self.data[(np.abs(z_scores) < threshold).all(axis=1)]
+```
+Example boxplots made:  
+* Elevation:  
+![slope_hist.png](dataset_and_info/markdown_pictures/elevation_boxplot.png) 
+
+* Slope:  
+![slope_hist.png](dataset_and_info/markdown_pictures/slope_boxplot.png) 
+
+At the end I have implemented function which performs hyperparameter tuning for NN model 
+using random search cross-validation - get_hyperparameters().
+So I have declared a dictionary param_grid to specify the hyperparameters to be tuned and their possible values:
+```
+param_grid = {
+    'hidden_layer_size': [64, 128, 256],
+    'activation': ['relu', 'sigmoid'],
+    'optimizer': ['adam', 'sgd'],
+    'dropout_rate': [0.1, 0.2, 0.3],
+    'batch_size': [32, 64, 128],
+    'epochs': [5, 10, 20]
+ }
+```
+At the end the RandomizedSearchCV function performs a randomized search over the dictionary param_grid 
+to find the best combination of hyperparameters for the neural network model.
+
+Plots training curves for the best hyperparameters:
+![model_accuracy.png](dataset_and_info/markdown_pictures/model_accuracy.png) 
+![model_loss.png](dataset_and_info/markdown_pictures/model_loss.png) 
+Very good outcomes. The higher the value of accuracy the lower the loss.
 ### Evaluation of models
 
+
 ### REST API
+Rest API is using Flask, I have made simple api_driver.py file to handle api requestes which are being served by
+request_driver.py. It could also be send for instance from Postman. 
+Example use case:
+
+
 
 ### Docker
+
+
 emote: error: File serialized_files/model_heuristic.pkl is 487.61 MB; this exceeds GitHub's file size limit of 100.00 MB        
 remote: error: File serialized_files/model_NN.pkl is 243.80 MB; this exceeds GitHub's file size limit of 100.00 MB
