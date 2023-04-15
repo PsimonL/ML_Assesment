@@ -4,8 +4,10 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 import seaborn as sns
 from keras.wrappers.scikit_learn import KerasClassifier
+from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV
 from sklearn.preprocessing import StandardScaler
+from keras import backend as K
 
 
 class CoverTypeClassifierNN:
@@ -78,6 +80,13 @@ class CoverTypeClassifierNN:
                     fmt=".2f", linewidth=.5, cmap=sns.cubehelix_palette(as_cmap=True))
         plt.show()
 
+    def keras_f1_score(self):
+        y_pred = self.model.predict(self.X_test)
+        y_pred = np.argmax(y_pred, axis=1)
+        y_true = np.argmax(self.y_test) if self.y_test.ndim > 1 else self.y_test
+        score = f1_score(y_true, y_pred, average='macro')
+        return score
+
     def create_model(self, optimizer, hidden_layer_size, epochs, dropout_rate, batch_size, activation):
         self.epochs, self.batch_size = epochs, batch_size
         self.model = tf.keras.models.Sequential([
@@ -91,7 +100,8 @@ class CoverTypeClassifierNN:
     def train(self, epochs, batch_size):
         self.model.fit(self.X_train, self.y_train, epochs=epochs, batch_size=batch_size, validation_split=0.2)
         loss, accuracy = self.model.evaluate(self.X_test, self.y_test)
-        return accuracy
+        f1 = self.keras_f1_score()
+        return accuracy, f1
 
     def predict_cover_type(self, sample):
         # Sample row dataframe

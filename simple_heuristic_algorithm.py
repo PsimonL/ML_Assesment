@@ -83,7 +83,7 @@ class CoverTypeClassifierHeuristic:
             return 7
 
 
-heuristic = CoverTypeClassifierHeuristic(data_file_path='covtype.data')
+# heuristic = CoverTypeClassifierHeuristic(data_file_path='dataset_and_info/covtype.data')
 #
 # heuristic.correlation_matrix_heatmap()
 #
