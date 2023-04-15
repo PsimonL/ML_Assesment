@@ -155,26 +155,25 @@ class CoverTypeClassifierNN:
         plt.legend(['Train', 'Validation'], loc='upper left')
         plt.show()
 
-# ann_model = CoverTypeClassifierNN(data_file_path='covtype.data')
-# # ann_model.plot_boxplots()
-# ann_model.outliers()
-# ann_model.split()
-# ann_model.scaling()
-# # ann_model.correlation_matrix_heatmap()
-# ann_model.create_model(optimizer="adam", hidden_layer_size=128, epochs=1, dropout_rate=0.0, batch_size=32, activation="relu")
-# acc = ann_model.train(epochs=1, batch_size=32)
-# print(acc)
-# predict = [
-#     2596, 51, 3, 258, 0, 510, 221, 232, 148, 6279,
-#     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#     0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-# ]  # 5
-# predicted_ann = ann_model.predict_cover_type(predict)
-# print(predicted_ann)
-# best_params, best_score = ann_model.get_hyperparameters()
-# print(f"Best hyperparameters = {best_params}")
-# print("Best accuracy score = {:.2f}%".format(best_score * 100))
-# ann_model.plot_training_curvers(best_params)
-
-# print(json.dumps(output_json, indent=4))
+ann_model = CoverTypeClassifierNN(data_file_path='dataset_and_info/covtype.data')
+# ann_model.plot_boxplots()
+ann_model.outliers()
+ann_model.split()
+ann_model.scaling()
+# ann_model.correlation_matrix_heatmap()
+ann_model.create_model(optimizer="adam", hidden_layer_size=128, epochs=15, dropout_rate=0.0, batch_size=32, activation="relu")
+acc, f1 = ann_model.train(epochs=1, batch_size=32)
+print("Accuracy score = {:.2f}%".format(acc * 100))
+print("F1 score = {:.2f}%".format(f1 * 100))
+predict = [
+    2596, 51, 3, 258, 0, 510, 221, 232, 148, 6279,
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+]  # 5
+predicted_ann = ann_model.predict_cover_type(predict)
+print("Predicted value = ", predicted_ann)
+best_params, best_score = ann_model.get_hyperparameters()
+print(f"Best hyperparameters = {best_params}")
+print("Best accuracy score = {:.2f}%".format(best_score * 100))
+ann_model.plot_training_curvers(best_params)
