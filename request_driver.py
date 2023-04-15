@@ -8,7 +8,7 @@ predict = [
     0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 ]
 
-url = 'http://localhost:8080/predict'
+url = 'http://localhost:5000/predict'
 
 
 # data = {'option': options[0], 'pred_input': predict}
@@ -17,6 +17,7 @@ def json_request(option, pred_input):
 
 
 if __name__ == "__main__":
+    print("Sample data: ")
     print(*predict)
     while True:
         print("Functionalities of REST API: ")
