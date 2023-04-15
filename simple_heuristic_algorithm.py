@@ -28,6 +28,8 @@ class CoverTypeClassifierHeuristic:
         self.X = self.data.drop('Cover_Type', axis=1)
         self.y = self.data['Cover_Type']
 
+
+
     def correlation_matrix_heatmap(self):
         data_subset = self.data[self.cols]
         correlation_matrix = np.corrcoef(data_subset.values.T)
@@ -82,7 +84,7 @@ class CoverTypeClassifierHeuristic:
 
 
 heuristic = CoverTypeClassifierHeuristic(data_file_path='covtype.data')
-
+#
 # heuristic.correlation_matrix_heatmap()
 #
 # heuristic.make_histogram('Elevation', 57)
@@ -97,18 +99,26 @@ heuristic = CoverTypeClassifierHeuristic(data_file_path='covtype.data')
 # heuristic.min_max_mean_values('Horizontal_Distance_To_Hydrology')
 # heuristic.min_max_mean_values('Horizontal_Distance_To_Roadways')
 # heuristic.min_max_mean_values('Horizontal_Distance_To_Fire_Points')
-
+#
 # accuracy = heuristic.get_accu_simple_heuristic()
 # print("heuristic accuracy = ", accuracy)
-#
+
 # sample_row = pd.Series({
-#     'Elevation': 2800,
-#     'Slope': 12,
-#     'Aspect': 220,
-#     'Hillshade_Noon': 220,
-#     'Wilderness_Area_3': 1,
-#     'Horizontal_Distance_To_Hydrology': 120,
-#     'Hillshade_9am': 160
+    # 'Elevation': 2800,
+    # 'Slope': 12,
+    # 'Aspect': 220,
+    # 'Hillshade_Noon': 220,
+    # 'Wilderness_Area_3': 1,
+    # 'Horizontal_Distance_To_Hydrology': 120,
+    # 'Hillshade_9am': 160
 # })
 # pred_val = heuristic.get_pred_simple_heuristic(sample_row)
 # print("heuristic pred_val = ", pred_val)
+
+# 'Elevation': 2596,
+# 'Slope': 3,
+# 'Aspect': 51,
+# 'Hillshade_Noon': 232,
+# 'Wilderness_Area_3': 0,
+# 'Horizontal_Distance_To_Hydrology': 258,
+# 'Hillshade_9am': 221
