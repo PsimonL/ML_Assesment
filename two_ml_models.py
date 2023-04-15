@@ -50,14 +50,14 @@ class CoverTypeClassifierRFLR:
     def get_random_forest_accuracy(self):
         forest_pred = self.random_forest.predict(self.X_test)
         forest_acc = accuracy_score(self.y_test, forest_pred)
-        # forest_f1 = f1_score(self.y_test, forest_pred)
-        return forest_acc
+        forest_f1 = f1_score(self.y_test, forest_pred, average='weighted')
+        return forest_acc, forest_f1
 
     def get_logistic_regression_accuracy(self):
         logistic_reg_pred = self.logistic_reg.predict(self.X_test)
         logistic_reg_acc = accuracy_score(self.y_test, logistic_reg_pred)
-        # logistic_reg_f1 = f1_score(self.y_test, logistic_reg_pred)
-        return logistic_reg_acc
+        logistic_reg_f1 = f1_score(self.y_test, logistic_reg_pred, average='weighted')
+        return logistic_reg_acc, logistic_reg_f1
 
     def predict_cover_type(self, sample, pick):
         sample = np.asarray(sample)
