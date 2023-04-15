@@ -98,10 +98,10 @@ sample_row = pd.Series({
 </p>  
 
 ### Two Scikit-Learn classification algorithms
-In this task, I chose two machine learning algorithms used for data classification, namely logistic regression and random forest, both of which are located in the file two_ml_models.py.
+In this task, I chose two machine learning algorithms used for data classification, namely **logistic regression** and **random forest**, both of which are located in the file two_ml_models.py.
 I have previously tested other algorithms such as Naive-Bayes or SVM, however, LR and RF proved to be better.
 The data has been scaled to standardize the feature values, thereby avoiding the influence of different measurement units on the analysis results.
-I used StandardScaler
+I used **StandardScaler**:  
 ```
 self.scaler = StandardScaler()
 self.scaler.fit(self.X_train)
@@ -122,19 +122,19 @@ sample_pred = [
     0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 ]
 ```
-Which predicted value with accuracy and f1_score:  
+Which predicted value with **accuracy** and **f1_score**:  
 <p align="center">
 <img src="dataset_and_info/markdown_pictures/lr_rf_res.png" alt="lr_rf_res.png">
 </p>  
 
 ### TensorFlow neural network
 The neural network architecture consists of three layers:
-1. Dense layer with hidden_layer_size units and the specified activation function. 
+1. **Dense laye**r with hidden_layer_size units and the specified activation function. 
 It takes an input shape of self.X_train.shape[1] which corresponds to the number of features in the training data.
-2. Dropout layer that randomly drops out a specified dropout_rate fraction of the input units during training to reduce overfitting.
-3. Another dense layer with 7 units and a softmax activation function. This layer outputs the probability distribution over the 7 output classes.
+2. **Dropout laye**r that randomly drops out a specified dropout_rate fraction of the input units during training to reduce overfitting.
+3. Another **dense layer** with 7 units and a softmax activation function. This layer outputs the probability distribution over the 7 output classes.
 
-In addition to scaling, as before, I performed outlier detection using the z-score or IQR method.
+In addition to **scaling**, as before, I performed **outlier detection** using the **z-score** or IQR method.
 Z-score method is used to identify and remove any outliers from the dataset. The z-score is calculated by subtracting 
 the mean of the data from each data point, and then dividing by the standard deviation. This gives a measure of 
 how many standard deviations a data point is from the mean of the dataset. Next, a threshold value is set. 
@@ -181,8 +181,8 @@ param_grid = {
     'epochs': [5, 10, 20]
  }
 ```
-At the end the RandomizedSearchCV function performs a randomized search over the dictionary param_grid 
-to find the best combination of hyperparameters for the neural network model.
+At the end the **RandomizedSearchCV** function performs a **randomized search** over the dictionary **param_grid
+to find the best combination of hyperparameters** for the neural network model.
 
 Results:  
 ![ann_basic_res.png](dataset_and_info/markdown_pictures/ann_basic_res.png)  
@@ -197,22 +197,35 @@ Very good outcomes. The higher the value of accuracy the lower the loss.
 
 Overall model should work fine.  
 ### Evaluation of models
+In each section I have described what evaluation I have used, mainly **accuracy** and **f1_score** in case of NN, LR and RF.
+Short description:  
+* Accuracy is the ratio of the number of correctly predicted instances to the total number of instances. 
+It is a simple and relatively intuitive metric.  
+https://en.wikipedia.org/wiki/Accuracy_and_precision  
+* F1 score is a weighted average of precision and recall.
+It is a harmonic mean of precision and recall, and it is a better metric when we have an imbalanced dataset.  
+https://en.wikipedia.org/wiki/Harmonic_mean  
+https://en.wikipedia.org/wiki/F-score  
+* The main difference between accuracy and F1 score is that accuracy takes into account both true 
+positives and true negatives, while F1 score takes into account both precision and recall.  
 
 
 ### REST API
-Rest API is using Flask, I have made simple api_driver.py file to handle api requestes which are being served by
-request_driver.py. It could also be send for instance from Postman.  
-But i have created script to send requests to REST API, defined in request_driver.py.  
+Rest API is using **Flask**, I have made simple **api_driver.py** file to handle api requestes which are being served by
+**request_driver.py**. It could also be send for instance from Postman.  
+But i have created mentioned script to send requests to REST API, defined in **request_driver.py**.  
 Example use case:  
 ![api_usage.png](dataset_and_info/markdown_pictures/api_usage.png)
 
 
 ### Docker
-Before I could make image based on python:3.10.6-slim and my REST API I have to serialize models. I could not attach them
-because of GitHub regulations:
+Before I could make image based on **python:3.10.6-slim** and my REST API I have to **serialize models**. I **could not attach** them
+because of **GitHub regulations**:
+```
 emote: error: File serialized_files/model_heuristic.pkl is 487.61 MB; this exceeds GitHub's file size limit of 100.00 MB        
-remote: error: File serialized_files/model_NN.pkl is 243.80 MB; this exceeds GitHub's file size limit of 100.00 MB
-But they can be immediately made just by running serializer.py file. They will appear in serialized_files directory.
+remote: error: File serialized_files/model_NN.pkl is 243.80 MB; this exceeds GitHub's file size limit of 100.00 MB  
+```
+But they can be immediately made just by running **serializer.py** file. They will appear in **serialized_files directory**.
 After that the Dockerfile can be created:
 ```
 FROM python:3.10.6-slim
@@ -230,25 +243,28 @@ COPY serialized_files/model_NN.pkl .
 CMD ["python", "api_driver.py"]
 ```
 In short: 
-Setting directory inside container build as instance of this image to /ml-rest-api. Than coping requirements.txt
-to current directory. Next we install libs defined in text file. Later I'm coping api_driver.py and serialized models
+**Setting directory** inside container build as instance of this image to **/ml-rest-api**. Than **coping requirements.txt**
+to **current directory**. Next we **install libs defined in text file**. Later I'm c**oping api_driver.py and serialized models**
 to the container. Finally, the "CMD" instruction sets the default command to execute when the container starts. 
-In this case, it runs the api_driver.py file with the Python interpreter.  
+In this case, it runs the **api_driver.py** file with the Python interpreter.  
 
 Next we need to build dockerfile:  
 ```
 docker image build -t <image-name> <path-to-dockerfile>
 ```
 
-After that we need to run our container in detached mode and map ports 8000 of container to host port at also 8000.
+After that we need to run our container in detached mode and **map ports 8000 of container to host port at also 8000**.
 So it runs at http://localhost:8000:  
 ```
 docker container run -d -p 8000:8000 --name=<my-container> <my-image-name>
 ```
 
-Finally we can send request using Postman or curl which should look something like this:  
+Finally we can send request using **Postman or curl** which should look something like this:  
 ```
 curl -X POST -H "Content-Type: application/json" -d '{"option": "'"$option"'", "pred_input": "'"$pred_input"'"}' http://localhost:8000
 ```
 
 ## Finished
+Szymon Rogowski
+Industrial Computer Science / Computational Engineering 3rd year student
+AGH University of Science and Technology, Kraków, Poland
