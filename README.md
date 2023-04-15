@@ -184,22 +184,71 @@ param_grid = {
 At the end the RandomizedSearchCV function performs a randomized search over the dictionary param_grid 
 to find the best combination of hyperparameters for the neural network model.
 
-Plots training curves for the best hyperparameters:
-![model_accuracy.png](dataset_and_info/markdown_pictures/model_accuracy.png) 
-![model_loss.png](dataset_and_info/markdown_pictures/model_loss.png) 
-Very good outcomes. The higher the value of accuracy the lower the loss.
+Results:  
+![ann_basic_res.png](dataset_and_info/markdown_pictures/ann_basic_res.png)  
+
+Results for the best hyperparameters:   
+![ann_hyper_res.png](dataset_and_info/markdown_pictures/ann_hyper_res.png)  
+
+Plots training curves for the best hyperparameters:  
+![ann_accuracy.png](dataset_and_info/markdown_pictures/ann_acc.png)   
+![ann_loss.png](dataset_and_info/markdown_pictures/ann_loss.png)   
+Very good outcomes. The higher the value of accuracy the lower the loss.  
+
+Overall model should work fine.  
 ### Evaluation of models
 
 
 ### REST API
 Rest API is using Flask, I have made simple api_driver.py file to handle api requestes which are being served by
-request_driver.py. It could also be send for instance from Postman. 
-Example use case:
-
+request_driver.py. It could also be send for instance from Postman.  
+But i have created script to send requests to REST API, defined in request_driver.py.  
+Example use case:  
+![api_usage.png](dataset_and_info/markdown_pictures/api_usage.png)
 
 
 ### Docker
-
-
+Before I could make image based on python:3.10.6-slim and my REST API I have to serialize models. I could not attach them
+because of GitHub regulations:
 emote: error: File serialized_files/model_heuristic.pkl is 487.61 MB; this exceeds GitHub's file size limit of 100.00 MB        
 remote: error: File serialized_files/model_NN.pkl is 243.80 MB; this exceeds GitHub's file size limit of 100.00 MB
+But they can be immediately made just by running serializer.py file. They will appear in serialized_files directory.
+After that the Dockerfile can be created:
+```
+FROM python:3.10.6-slim
+
+WORKDIR /ml-rest-api
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY api_driver.py .
+COPY serialized_files/model_heuristic.pkl.pkl .
+COPY serialized_files/model_RFLR.pkl.pkl .
+COPY serialized_files/model_NN.pkl .
+
+CMD ["python", "api_driver.py"]
+```
+In short: 
+Setting directory inside container build as instance of this image to /ml-rest-api. Than coping requirements.txt
+to current directory. Next we install libs defined in text file. Later I'm coping api_driver.py and serialized models
+to the container. Finally, the "CMD" instruction sets the default command to execute when the container starts. 
+In this case, it runs the api_driver.py file with the Python interpreter.  
+
+Next we need to build dockerfile:  
+```
+docker image build -t <image-name> <path-to-dockerfile>
+```
+
+After that we need to run our container in detached mode and map ports 8000 of container to host port at also 8000.
+So it runs at http://localhost:8000:  
+```
+docker container run -d -p 8000:8000 --name=<my-container> <my-image-name>
+```
+
+Finally we can send request using Postman or curl which should look something like this:  
+```
+curl -X POST -H "Content-Type: application/json" -d '{"option": "'"$option"'", "pred_input": "'"$pred_input"'"}' http://localhost:8000
+```
+
+## Finished
