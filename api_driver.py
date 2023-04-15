@@ -27,7 +27,7 @@ def predict():
     output_json.clear()
 
     if picked_option == options[0]:
-        classifier = CoverTypeClassifierHeuristic(data_file_path='covtype.data')
+        classifier = CoverTypeClassifierHeuristic(data_file_path='dataset_and_info/covtype.data')
         heuristic_acc = classifier.get_accu_simple_heuristic()
 
         sample_row = pd.Series({
@@ -45,7 +45,7 @@ def predict():
         output_json = {"Heuristic Algorithm Accuracy": heuristic_acc,
                        "Predict 'Cover_type' value for sample - Heuristic Algorithm": predicted_cover_type}
     elif picked_option == options[1]:
-        classifier = CoverTypeClassifierRFLR(data_file_path='covtype.data')
+        classifier = CoverTypeClassifierRFLR(data_file_path='dataset_and_info/covtype.data')
         random_forest_acc, random_forest_f1 = classifier.get_random_forest_accuracy()
         predicted_cover_type = classifier.predict_cover_type(sample_pred, "RF")
         predicted_cover_type = np.int64(predicted_cover_type).tolist()
@@ -53,7 +53,7 @@ def predict():
                        "Random Forest F1_score": random_forest_f1,
                        "Predict 'Cover_type' value for sample - Random Forest": predicted_cover_type}
     elif picked_option == options[2]:
-        classifier = CoverTypeClassifierRFLR(data_file_path='covtype.data')
+        classifier = CoverTypeClassifierRFLR(data_file_path='dataset_and_info/covtype.data')
         logistic_reg_acc, logistic_reg_f1 = classifier.get_logistic_regression_accuracy()
         predicted_cover_type = classifier.predict_cover_type(sample_pred, "LR")
         predicted_cover_type = np.int64(predicted_cover_type).tolist()
@@ -62,7 +62,7 @@ def predict():
                        "Predict 'Cover_type' value for sample - Logistic Regression": predicted_cover_type}
 
     elif picked_option == options[3]:
-        classifier = CoverTypeClassifierNN(data_file_path='covtype.data')
+        classifier = CoverTypeClassifierNN(data_file_path='dataset_and_info/covtype.data')
         classifier.outliers()
         classifier.split()
         classifier.scaling()
