@@ -1,6 +1,5 @@
-# OpenX_ML_Intern
-## Intro
-The following work is part of recruitment process at OpenX for the position of Machine Learning Intern.
+# Intro
+The following work is part of recruitment process as well as science competition, science fair at University.
 Main task was composed of several steps:
 1. Implementing a very simple heuristic that will classify the data (doesn't need to be accurate).
 2. Implementing two simple Machine Learning models, based on Scikit-learn library.
