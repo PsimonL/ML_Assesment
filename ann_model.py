@@ -164,13 +164,21 @@ class CoverTypeClassifierNN:
     def save_model_weights(self, weights_path):
         self.model.save_weights(weights_path)
 
-    def save_model(self, model_path='serialized_files/model_NN.joblib'):
-        with open(model_path, 'wb') as f:
-            joblib.dump(self.model, f)
+    def save_model(self, model_path='serialized_files/model_NN.joblib', use_pickle=False):
+        if use_pickle:
+            with open(model_path, 'wb') as f:
+                pickle.dump(self.model, f)
+        else:
+            with open(model_path, 'wb') as f:
+                joblib.dump(self.model, f)
 
-    def load_model(self, model_path='serialized_files/model_NN.joblib'):
-        with open(model_path, 'rb') as f:
-            self.model = joblib.load(f)
+    def load_model(self, model_path='serialized_files/model_NN.joblib', use_pickle=False):
+        if use_pickle:
+            with open(model_path, 'rb') as f:
+                self.model = pickle.load(f)
+        else:
+            with open(model_path, 'rb') as f:
+                self.model = joblib.load(f)
 
 
 ann_model = CoverTypeClassifierNN(data_file_path='dataset_and_info/covtype.data')
