@@ -8,6 +8,8 @@ from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV
 from sklearn.preprocessing import StandardScaler
 from keras import backend as K
+import joblib
+import pickle
 
 
 class CoverTypeClassifierNN:
@@ -162,35 +164,44 @@ class CoverTypeClassifierNN:
     def save_model_weights(self, weights_path):
         self.model.save_weights(weights_path)
 
-# ann_model = CoverTypeClassifierNN(data_file_path='dataset_and_info/covtype.data')
-# # ann_model.plot_boxplots()
-# ann_model.outliers()
-# ann_model.split()
-# ann_model.scaling()
-# # ann_model.correlation_matrix_heatmap()
-# ann_model.create_model(optimizer="adam", hidden_layer_size=128, epochs=5, dropout_rate=0.0, batch_size=32, activation="relu")
-# acc, f1 = ann_model.train(epochs=5, batch_size=32)
-#
-# # Save weights after training
+    def save_model(self, model_path='serialized_files/model_NN.joblib'):
+        with open(model_path, 'wb') as f:
+            joblib.dump(self.model, f)
+
+    def load_model(self, model_path='serialized_files/model_NN.joblib'):
+        with open(model_path, 'rb') as f:
+            self.model = joblib.load(f)
+
+
+ann_model = CoverTypeClassifierNN(data_file_path='dataset_and_info/covtype.data')
+# ann_model.plot_boxplots()
+ann_model.outliers()
+ann_model.split()
+ann_model.scaling()
+# ann_model.correlation_matrix_heatmap()
+ann_model.create_model(optimizer="adam", hidden_layer_size=128, epochs=5, dropout_rate=0.0, batch_size=32, activation="relu")
+acc, f1 = ann_model.train(epochs=5, batch_size=32)
+
+# Save weights after training
 # ann_model.save_model_weights('weights/trained_weights.h5')
-#
-# print("Accuracy score = {:.2f}%".format(acc * 100))
-# print("F1 score = {:.2f}%".format(f1 * 100))
-# predict = [
-#     2596, 51, 3, 258, 0, 510, 221, 232, 148, 6279,
-#     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-#     0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-# ]  # 5
-#
+
+print("Accuracy score = {:.2f}%".format(acc * 100))
+print("F1 score = {:.2f}%".format(f1 * 100))
+predict = [
+    2596, 51, 3, 258, 0, 510, 221, 232, 148, 6279,
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+]  # 5
+
 # TODO: REMEMBER TO LOAD SAVED WEIGHTS!
-# # Load weights before making predictions
+# Load weights before making predictions
 # ann_model.load_model_weights('weights/trained_weights.h5')
-#
-# predicted_ann = ann_model.predict_cover_type(predict)
-# print("Predicted value = ", predicted_ann)
-# best_params, best_score = ann_model.get_hyperparameters()
-# print(f"Best hyperparameters = {best_params}")
-# print("Best accuracy score = {:.2f}%".format(best_score * 100))
-# history = ann_model.plot_training_curvers(best_params)
-# print(history)
+
+predicted_ann = ann_model.predict_cover_type(predict)
+print("Predicted value = ", predicted_ann)
+best_params, best_score = ann_model.get_hyperparameters()
+print(f"Best hyperparameters = {best_params}")
+print("Best accuracy score = {:.2f}%".format(best_score * 100))
+history = ann_model.plot_training_curvers(best_params)
+print(history)

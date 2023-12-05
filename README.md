@@ -127,6 +127,7 @@ Which predicted value with **accuracy** and **f1_score**:
 </p>  
 
 ### TensorFlow neural network
+FIXED: pickling and reloading models - https://neptune.ai/blog/saving-trained-model-in-python
 The neural network architecture consists of three layers:
 1. **Dense laye**r with hidden_layer_size units and the specified activation function. 
 It takes an input shape of self.X_train.shape[1] which corresponds to the number of features in the training data.
