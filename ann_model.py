@@ -183,6 +183,7 @@ class CoverTypeClassifierNN:
 #     0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 # ]  # 5
 #
+# TODO: REMEMBER TO LOAD SAVED WEIGHTS!
 # # Load weights before making predictions
 # ann_model.load_model_weights('weights/trained_weights.h5')
 #
