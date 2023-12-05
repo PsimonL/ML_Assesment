@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import numpy as np
 import pandas as pd
+import pickle
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from request_driver import options
@@ -10,6 +11,22 @@ from simple_heuristic_algorithm import CoverTypeClassifierHeuristic
 
 app = Flask(__name__)
 
+class CoverTypeClassifierNNWrapper:
+    def __init__(self, model_path='serialized_model/nn_model.pkl', data_file_path='dataset_and_info/covtype.data'):
+        self.model_path = model_path
+        self.data_file_path = data_file_path
+        self.classifier = None
+
+    def load_model(self):
+        if not self.classifier:
+            with open(self.model_path, 'rb') as file:
+                self.classifier = pickle.load(file)
+
+    def predict_cover_type(self, sample_pred):
+        if not self.classifier:
+            raise ValueError("Model not loaded. Please load the model first using load_model().")
+
+        return self.classifier.predict_cover_type(sample_pred)
 
 @app.route('/', methods=['GET'])
 def hello_world():
@@ -61,17 +78,28 @@ def predict():
                        "Logistic Regression F1_score:": logistic_reg_f1,
                        "Predict 'Cover_type' value for sample - Logistic Regression": predicted_cover_type}
 
+    # DONT WANT TO BUILD IT, JUST UNPACK MODEL PREVIOUSLY BUILD MODEL, serializer.py
+    # elif picked_option == options[3]:
+    #     classifier = CoverTypeClassifierNN(data_file_path='dataset_and_info/covtype.data')
+    #     classifier.outliers()
+    #     classifier.split()
+    #     classifier.scaling()
+    #     classifier.create_model(optimizer="adam", hidden_layer_size=128, epochs=1, dropout_rate=0.0, batch_size=32, activation="relu")
+    #     ann_acc, ann_f1 = classifier.train(epochs=1, batch_size=32)
+    #     predicted_cover_type = classifier.predict_cover_type(sample_pred)
+    #     predicted_cover_type = np.int64(predicted_cover_type).tolist()
+    #     output_json = {"ANN Accuracy": ann_acc, "ANN F1_score": ann_f1,
+    #                    "Predict 'Cover_type' value for sample - NN": predicted_cover_type}
+    # else:
+    #     return jsonify({'error': 'Invalid option choice.'}), 400
+
     elif picked_option == options[3]:
-        classifier = CoverTypeClassifierNN(data_file_path='dataset_and_info/covtype.data')
-        classifier.outliers()
-        classifier.split()
-        classifier.scaling()
-        classifier.create_model(optimizer="adam", hidden_layer_size=128, epochs=1, dropout_rate=0.0, batch_size=32, activation="relu")
-        ann_acc, ann_f1 = classifier.train(epochs=1, batch_size=32)
-        predicted_cover_type = classifier.predict_cover_type(sample_pred)
+        nn_wrapper = CoverTypeClassifierNNWrapper()
+        nn_wrapper.load_model()
+
+        predicted_cover_type = nn_wrapper.predict_cover_type(sample_pred)
         predicted_cover_type = np.int64(predicted_cover_type).tolist()
-        output_json = {"ANN Accuracy": ann_acc, "ANN F1_score": ann_f1,
-                       "Predict 'Cover_type' value for sample - NN": predicted_cover_type}
+        output_json = {"Predict 'Cover_type' value for sample - NN": predicted_cover_type}
     else:
         return jsonify({'error': 'Invalid option choice.'}), 400
 
